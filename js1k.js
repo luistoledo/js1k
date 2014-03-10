@@ -1,26 +1,26 @@
 // TAKE OVER THAT CANVAS
 // c = canvas context
-
 d = document;
 
+// ZOOM FACTOR
 zm=3;
 
 W = a.width  / zm;
 H = a.height / zm;
 
-//KEY
+// KEY PRESSED
 k = 0;
-//KEYPRESSED
-s = 5;
 
-//STEP SIZE (FOR BALL AND PLAYER) 
-z = 20;
+// STEP SIZE
+z = 2;
 
-//CUBES HEIGHT/WIDTH, PLAYER HEIGHT 
 //MMM.. COLORS
-g = 'gray';
-r = '#F5C959';
-b = 'black';
+//JUNGLE GREEN
+g = '#2ABB9B';
+// YELLOW
+w = '#F5C959';
+// CINNABAR
+r = '#E74C3C';
 
 // DELTATIMES
 N = Date.now;
@@ -31,23 +31,48 @@ x=10, y=10;
 
 c.scale(zm,zm);
 
-var cs = Math.cos(120.01), sn = Math.sin(120.01);
-var hh = Math.cos(17.50);
-var aa = 100*cs, bb = -100*sn, cc = 200;
-var dd = hh*100*sn, ee = hh*100*cs, ff = 200;
+// ENEMIES
+e=new Array();
 
-var image = new Image();
-image.src = "http://localhost:8000/grasstile.jpg";
+// BULLETS
+b = new Array();
+
+// DRAW RECTANGLE
+dr = function (x,y,w,h,l,t) {
+    c.fillStyle = l;
+    c.fillRect(x,y,w,h);
+};
+
+// COLLITION
+co = function (o,d){
+  for (var i=0;i<d.length;i++) {
+    var m = d[i];
+    if ( (o.x+o.w >= m.x) && 
+         (o.x <= m.x+m.w) &&
+         (o.y+o.w >= m.y) &&
+         (o.y <= m.y+m.w))
+      { d.splice(i,1);
+      return true; }
+  }
+  return false;
+}
+
+// CREATE RECTANGLE
+nr = function (x,y,w,l){
+  return new Object ({x:x || W+Math.random()*90,
+                      y:y || Math.random()*H, 
+                      i:0,
+                      w:w || 10,
+                      l:0 || l
+                    });
+}
 
 
-var img = new Image();
-img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAADFBMVEUAAABrw/85jv9Rtv+Mhd5YAAAAAXRSTlMAQObYZgAAAGZJREFUeNqt00EKwCAQQ9Ek3v/OtSBB0WDR/m0es1L8HGs3QE3lvbxFIANeg7UQGggnJMEAXIPSQgKOnIT6CyfAuwEDsNiCUegaeA9Ch4BbEHaLHbCQAVrfAQOwGN8ruqbfUQFOewAGOgOIVNucnAAAAABJRU5ErkJggg==";
-
-//c.drawImage(this, 0, 0,
-
-
-//c.setTransform(aa, dd, bb, ee, cc, ff);
-//tx=-5;ty=-5;
+// nasty reuse of key to be the index in the loop to fill enemies
+while(k<5) {
+  e.push(nr());
+  k++;
+}
 
 // GAMELOOP
 function gl() {
@@ -57,21 +82,44 @@ function gl() {
     D = (N()-pN) / 100;
     pN = N();
 
-    x += 2;
-    y = 50*Math.cos(x);
-    if (x>W) { x=0; }
+// PLAYER
+    if (k!=0){
+      if (k==40) y += z;
+      if (k==38) y -= z;
+      // to shoot: create bullet and reset keypressed
+      if (k==32) { b.push(nr(x,y,5)); k=0;}
+    }
 
-    c.drawImage(img,0,0);    
-    dr(x,y,10,10,r);
+    if (y<0) y=0;
+    if (y>H) y=H-10;
 
+    dr(x, y, 10, 10, g);
+
+// ENEMIES
+    for (var i=0; i<e.length; i++) {
+      var m = e[i];
+      m.y -= z*Math.cos(m.i*D);
+      m.x -= z;
+
+      m.i++;
+      if (m.x<0 || co(m,b)) e[i]=nr();
+      
+      dr(m.x, m.y, 10, 10, r);
+    }
+
+// BULLETS
+    for (var i=0; i<b.length; i++) {
+      var m = b[i];
+      m.x += z;
+      if (m.x>W) b.splice(i,1);
+      
+      dr(m.x, m.y, 5, 5, w);
+    }
+    
 };
 gl();
 
-// DRAW RECTANGLE
-function dr(x,y,w,h,l) {
-    c.fillStyle = l;
-    c.fillRect(x,y,w,h);
-}
+
 
 //KEYBOARD HOOKS 
 d.onkeydown = function(e) {
