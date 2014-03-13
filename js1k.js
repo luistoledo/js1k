@@ -17,38 +17,50 @@ c.scale(z,z);
 k = 0;
 
 //MMM.. COLORS
-//JUNGLE GREEN
-g = '#2ABB9B';
-// YELLOW
-w = '#F5C959';
-// CINNABAR
-r = '#E74C3C';
+//JUNGLE GREEN 2ABB9B
+g = '#3BA';
+// YELLOW F5C959
+w = '#FD6';
+// CINNABAR E74C3C
+r = '#E54';
 
 // DELTATIMES
 N = Date.now;
 pN = N();
+
+// RANDOMMMMM!
+R = Math.random;
 
 // SCORE
 s=0;
 // LIVES
 v=5;
 
+// CONSTANTS
+T=10, F=5;
+
 // INIT
-x=15, y=H/2;
+x=T, y=H/2;
 
 c.t = c.fillText;
 
 // ENEMIES
-e=new Array();
+e = new Array();
 
 // BULLETS
 b = new Array();
 
 // DRAW RECTANGLE
-dr = function (x,y,w,h,l) {
+// dr = function (x,y,w,h,l) {
+//     c.fillStyle = l;
+//     c.fillRect(x,y,w,h);
+// };
+
+dd = function (o,l, w,h) {
     c.fillStyle = l;
-    c.fillRect(x,y,w,h);
+    c.fillRect(o.x, o.y, w||o.w, h||o.w);
 };
+
 
 // COLLITION
 co = function (o,d,Q){
@@ -69,17 +81,17 @@ co = function (o,d,Q){
 
 // CREATE RECTANGLE
 nr = function (x,y,w,l){
-  return new Object ({x:x || W+Math.random()*150,
-                      y:y || Math.random()*H, 
+  return new Object ({x:x || W+R()*150,
+                      y:y || R()*H, 
                       i:0,
-                      w:w || 10,
+                      w:w || T,
                       l:0 || l
                     });
 }
 
 
 // nasty reuse of key to be the index in the loop to fill enemies
-while(k<9) {
+while(k<T) {
   e.push(nr());
   k++;
 }
@@ -87,22 +99,24 @@ while(k<9) {
 // GAMELOOP
 function gl() {
     requestAnimationFrame(gl);
+    // dr(0,0,W,H,'#666');
+    dd(({x:0,y:0}),'#666',W,H);
+
     if (v<=0) {
-      dr(0,0,W,H,'#000');
-      dr(0,0,0,0,'#fff');
-      c.t("lost, reload",10,10);
-    return
+      c.fillStyle=r;
+      c.t("lost, reload", T, T);
+      return
     }
-    dr(0,0,W,H,'#666');
+
 
 // DELTA TIME
     D = (N()-pN) / 100;
     pN = N();
 
 // SCORE
-    dr(10, 10, 5, 5, g);
+    c.fillStyle=g;
     c.t(v, 20, 15);
-    dr(10, 20, 5, 5, r);
+    c.fillStyle=r;
     c.t(s, 20, 25);
 
 // PLAYER
@@ -110,18 +124,19 @@ function gl() {
       if (k==40) y += z;
       if (k==38) y -= z;
       // to shoot: create bullet and reset keypressed
-      if (k==32) { b.push(nr(x,y,5)); k=0;}
+      if (k==32) { b.push(nr(x,y,F)); k=0;}
     }
 
+    // PLAYER BOUNCE WITH THE UPPER/LOWER LIMITS
     if (y<0) y=0;
-    if (y+10>H) y=H-10;
+    if (y+T>H) y=H-T;
 
     // collition between player and enemies group
-    if (co(({x:x,y:y,w:10}),e,0)) { 
-      v--;
-    }
+    var P = ({x:x,y:y,w:T});
+    if (co(P,e,0)) v--;
 
-    dr(x, y, 10, 10, g);
+    // dr(x, y, T, T, g);
+    dd(P, g);
 
 // ENEMIES
     for (var i=0; i<e.length; i++) {
@@ -132,11 +147,11 @@ function gl() {
       m.i++;
 
       // if enemy passed behind or it collides with a bullet, reneweit
-      if (m.x<0 || co(m,b,1)) { 
+      if (m.x<0 || co(m,b,1))  
         e[i]=nr();
-      }
 
-      dr(m.x, m.y, 10, 10, r);
+      // dr(m.x, m.y, T, T, r);
+      dd(m, r);
     }
 
 // BULLETS
@@ -147,7 +162,8 @@ function gl() {
       // if a bullet passed away, removeit
       if (m.x>W) b.splice(i,1);
       
-      dr(m.x, m.y, 5, 5, w);
+      // dr(m.x, m.y, F, F, w);
+      dd(m, w);
     }
     
 };
