@@ -94,6 +94,8 @@ while(k<T) {
   e.push(nr());
   k++;
 }
+console.log(k);
+console.log(e.length);
 
 // GAMELOOP
 gl=function() {
@@ -102,7 +104,7 @@ gl=function() {
 
     if (v<1) {
       fs(r);
-      c.t("u lose", T, T);
+      c.t("score: "+s, T, T);
       return
     }
 
@@ -112,9 +114,11 @@ gl=function() {
     pN = N();
 
 // SCORE
-    fs(g);
+    // fs(g);
+    dd(({x:5,y:5}), g, 5,5);
     c.t(v, T, T);
-    fs(r);
+    // fs(r);
+    dd(({x:5,y:15}), r, 5,5);
     c.t(s, T, 20);
 
 // PLAYER
