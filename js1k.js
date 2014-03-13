@@ -20,7 +20,8 @@ k = 0;
 //JUNGLE GREEN 2ABB9B
 g = '#3BA';
 // YELLOW F5C959
-w = '#FD6';
+// ITS GONNA BE USED DIRECTLY
+// w = '#FD6'; 
 // CINNABAR E74C3C
 r = '#E54';
 
@@ -37,7 +38,7 @@ s=0;
 v=5;
 
 // CONSTANTS
-T=10, F=5;
+T=10;
 
 // INIT
 x=T, y=H/2;
@@ -50,20 +51,17 @@ e = new Array();
 // BULLETS
 b = new Array();
 
-// DRAW RECTANGLE
-// dr = function (x,y,w,h,l) {
-//     c.fillStyle = l;
-//     c.fillRect(x,y,w,h);
-// };
+// context.fillStyle function
+function fs(l){c.fillStyle=l;}
 
-dd = function (o,l, w,h) {
-    c.fillStyle = l;
+// DRAW RECTANGLE
+function dd(o,l, w,h) {
+    fs(l);
     c.fillRect(o.x, o.y, w||o.w, h||o.w);
 };
 
-
 // COLLITION
-co = function (o,d,Q){
+function co(o,d,Q){
   for (var i=0;i<d.length;i++) {
     var m = d[i];
     if ( (o.x+o.w >= m.x) && 
@@ -80,7 +78,7 @@ co = function (o,d,Q){
 }
 
 // CREATE RECTANGLE
-nr = function (x,y,w,l){
+function nr(x,y,w,l){
   return new Object ({x:x || W+R()*150,
                       y:y || R()*H, 
                       i:0,
@@ -102,8 +100,8 @@ function gl() {
     // dr(0,0,W,H,'#666');
     dd(({x:0,y:0}),'#666',W,H);
 
-    if (v<=0) {
-      c.fillStyle=r;
+    if (v<1) {
+      fs(r);
       c.t("lost, reload", T, T);
       return
     }
@@ -114,9 +112,9 @@ function gl() {
     pN = N();
 
 // SCORE
-    c.fillStyle=g;
+    fs(g);
     c.t(v, 20, 15);
-    c.fillStyle=r;
+    fs(r);
     c.t(s, 20, 25);
 
 // PLAYER
@@ -124,7 +122,7 @@ function gl() {
       if (k==40) y += z;
       if (k==38) y -= z;
       // to shoot: create bullet and reset keypressed
-      if (k==32) { b.push(nr(x,y,F)); k=0;}
+      if (k==32) { b.push(nr(x,y,5)); k=0;}
     }
 
     // PLAYER BOUNCE WITH THE UPPER/LOWER LIMITS
@@ -162,8 +160,8 @@ function gl() {
       // if a bullet passed away, removeit
       if (m.x>W) b.splice(i,1);
       
-      // dr(m.x, m.y, F, F, w);
-      dd(m, w);
+      // dr(m.x, m.y, 5, 5, '#FD6');
+      dd(m, '#FD6');
     }
     
 };
