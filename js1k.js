@@ -3,16 +3,18 @@
 d = document;
 
 // ZOOM FACTOR
-zm=3;
+// Z=3;
 
-W = a.width  / zm;
-H = a.height / zm;
+// STEP SIZE
+z = 3;
+
+W = a.width  / z;
+H = a.height / z;
+
+c.scale(z,z);
 
 // KEY PRESSED
 k = 0;
-
-// STEP SIZE
-z = 2;
 
 //MMM.. COLORS
 //JUNGLE GREEN
@@ -26,10 +28,15 @@ r = '#E74C3C';
 N = Date.now;
 pN = N();
 
-// INIT
-x=10, y=10;
+// SCORE
+s=0;
+// LIVES
+v=5;
 
-c.scale(zm,zm);
+// INIT
+x=15, y=H/2;
+
+c.t = c.fillText;
 
 // ENEMIES
 e=new Array();
@@ -38,13 +45,13 @@ e=new Array();
 b = new Array();
 
 // DRAW RECTANGLE
-dr = function (x,y,w,h,l,t) {
+dr = function (x,y,w,h,l) {
     c.fillStyle = l;
     c.fillRect(x,y,w,h);
 };
 
 // COLLITION
-co = function (o,d){
+co = function (o,d,Q){
   for (var i=0;i<d.length;i++) {
     var m = d[i];
     if ( (o.x+o.w >= m.x) && 
@@ -52,6 +59,9 @@ co = function (o,d){
          (o.y+o.w >= m.y) &&
          (o.y <= m.y+m.w))
       { d.splice(i,1);
+        // another nasty lenghtsaver
+        // send a true 3rd param to increment the score
+        s+=Q;
       return true; }
   }
   return false;
@@ -59,7 +69,7 @@ co = function (o,d){
 
 // CREATE RECTANGLE
 nr = function (x,y,w,l){
-  return new Object ({x:x || W+Math.random()*90,
+  return new Object ({x:x || W+Math.random()*150,
                       y:y || Math.random()*H, 
                       i:0,
                       w:w || 10,
@@ -69,7 +79,7 @@ nr = function (x,y,w,l){
 
 
 // nasty reuse of key to be the index in the loop to fill enemies
-while(k<5) {
+while(k<9) {
   e.push(nr());
   k++;
 }
@@ -77,10 +87,23 @@ while(k<5) {
 // GAMELOOP
 function gl() {
     requestAnimationFrame(gl);
-    dr(0,0,W,H,'#5E5E5E');
-        
+    if (v<=0) {
+      dr(0,0,W,H,'#000');
+      dr(0,0,0,0,'#fff');
+      c.t("lost, reload",10,10);
+    return
+    }
+    dr(0,0,W,H,'#666');
+
+// DELTA TIME
     D = (N()-pN) / 100;
     pN = N();
+
+// SCORE
+    dr(10, 10, 5, 5, g);
+    c.t(v, 20, 15);
+    dr(10, 20, 5, 5, r);
+    c.t(s, 20, 25);
 
 // PLAYER
     if (k!=0){
@@ -91,7 +114,12 @@ function gl() {
     }
 
     if (y<0) y=0;
-    if (y>H) y=H-10;
+    if (y+10>H) y=H-10;
+
+    // collition between player and enemies group
+    if (co(({x:x,y:y,w:10}),e,0)) { 
+      v--;
+    }
 
     dr(x, y, 10, 10, g);
 
@@ -102,8 +130,12 @@ function gl() {
       m.x -= z;
 
       m.i++;
-      if (m.x<0 || co(m,b)) e[i]=nr();
-      
+
+      // if enemy passed behind or it collides with a bullet, reneweit
+      if (m.x<0 || co(m,b,1)) { 
+        e[i]=nr();
+      }
+
       dr(m.x, m.y, 10, 10, r);
     }
 
@@ -111,6 +143,8 @@ function gl() {
     for (var i=0; i<b.length; i++) {
       var m = b[i];
       m.x += z;
+
+      // if a bullet passed away, removeit
       if (m.x>W) b.splice(i,1);
       
       dr(m.x, m.y, 5, 5, w);
@@ -118,7 +152,6 @@ function gl() {
     
 };
 gl();
-
 
 
 //KEYBOARD HOOKS 
