@@ -5,13 +5,13 @@ d = document;
 // ZOOM FACTOR
 // Z=3;
 
-// STEP SIZE
-z = 3;
+// STEP SIZE && ZOOM FACTOR
+// z = 3;
 
-W = a.width  / z;
-H = a.height / z;
+W = a.width  / 3;
+H = a.height / 3;
 
-c.scale(z,z);
+c.scale(3,3);
 
 // KEY PRESSED
 k = 0;
@@ -43,6 +43,7 @@ T=10;
 // INIT
 x=T, y=H/2;
 
+// fillText shortcut
 c.t = c.fillText;
 
 // ENEMIES
@@ -52,16 +53,16 @@ e = new Array();
 b = new Array();
 
 // context.fillStyle function
-function fs(l){c.fillStyle=l;}
+fs=function(l){c.fillStyle=l;}
 
 // DRAW RECTANGLE
-function dd(o,l, w,h) {
+dd=function(o,l, w,h) {
     fs(l);
     c.fillRect(o.x, o.y, w||o.w, h||o.w);
 };
 
 // COLLITION
-function co(o,d,Q){
+co=function(o,d,Q){
   for (var i=0;i<d.length;i++) {
     var m = d[i];
     if ( (o.x+o.w >= m.x) && 
@@ -78,7 +79,7 @@ function co(o,d,Q){
 }
 
 // CREATE RECTANGLE
-function nr(x,y,w,l){
+nr=function(x,y,w,l){
   return new Object ({x:x || W+R()*150,
                       y:y || R()*H, 
                       i:0,
@@ -95,14 +96,13 @@ while(k<T) {
 }
 
 // GAMELOOP
-function gl() {
+gl=function() {
     requestAnimationFrame(gl);
-    // dr(0,0,W,H,'#666');
     dd(({x:0,y:0}),'#666',W,H);
 
     if (v<1) {
       fs(r);
-      c.t("lost, reload", T, T);
+      c.t("u lose", T, T);
       return
     }
 
@@ -113,14 +113,14 @@ function gl() {
 
 // SCORE
     fs(g);
-    c.t(v, 20, 15);
+    c.t(v, T, T);
     fs(r);
-    c.t(s, 20, 25);
+    c.t(s, T, 20);
 
 // PLAYER
     if (k!=0){
-      if (k==40) y += z;
-      if (k==38) y -= z;
+      if (k==40) y += 3;
+      if (k==38) y -= 3;
       // to shoot: create bullet and reset keypressed
       if (k==32) { b.push(nr(x,y,5)); k=0;}
     }
@@ -133,14 +133,13 @@ function gl() {
     var P = ({x:x,y:y,w:T});
     if (co(P,e,0)) v--;
 
-    // dr(x, y, T, T, g);
     dd(P, g);
 
 // ENEMIES
     for (var i=0; i<e.length; i++) {
       var m = e[i];
-      m.y -= z*Math.cos(m.i*D);
-      m.x -= z;
+      m.y -= 3*Math.cos(m.i*D);
+      m.x -= 3;
 
       m.i++;
 
@@ -148,19 +147,17 @@ function gl() {
       if (m.x<0 || co(m,b,1))  
         e[i]=nr();
 
-      // dr(m.x, m.y, T, T, r);
       dd(m, r);
     }
 
 // BULLETS
     for (var i=0; i<b.length; i++) {
       var m = b[i];
-      m.x += z;
+      m.x += 3;
 
       // if a bullet passed away, removeit
       if (m.x>W) b.splice(i,1);
       
-      // dr(m.x, m.y, 5, 5, '#FD6');
       dd(m, '#FD6');
     }
     
@@ -172,6 +169,6 @@ gl();
 d.onkeydown = function(e) {
     k = e.keyCode;
 }
-d.onkeyup = function(e) {
+d.onkeyup = function() {
     k = 0;
 }
