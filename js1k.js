@@ -8,10 +8,10 @@ d = document;
 // STEP SIZE && ZOOM FACTOR
 // z = 3;
 
-W = a.width  / 3;
-H = a.height / 3;
+W = a.width  / 4;
+H = a.height / 4;
 
-c.scale(3,3);
+c.scale(4,4);
 
 // KEY PRESSED
 k = 0;
@@ -52,6 +52,15 @@ e = new Array();
 // BULLETS
 b = new Array();
 
+// DRAGON PLAYER
+img = new Image();
+// img.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAICAQAAABaf7ccAAAAKklEQVR4AWMgDP4DIZyNUwmExGMKmqL/COWMaEYzgtmYutHFYBiXhaQAAE5qF+vrh9KMAAAAAElFTkSuQmCC";
+img.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAGAQAAAADiByNKAAAAGklEQVQIHWOy/c8UxsBkeILpryVT3FWmB68ANHcGywxre7AAAAAASUVORK5CYII=";
+// img.src="data:image/gif;base64,R0lGODdhEAAGAIAAAAAAAHt6eiwAAAAAEAAGAAACFASCcclouloz58HoaNUcp6pIjBcUADs="
+// img.src="data:image/gif;base64,R0lGODdhEAAGAIAAAAAAAAAAACH5BAEAAAEALAAAAAAQAAYAAAIUBIJxyWi6WjPnweho1RynqkiMFxQAOw=="
+// img.src="data:image/gif;base64,R0lGODdhEAAGAIAAAAAAAP///ywAAAAAEAAGAAACFASCcclouloz58HoaNUcp6pIjBcUADs="
+n=t=0;
+
 // context.fillStyle function
 fs=function(l){c.fillStyle=l;}
 
@@ -80,7 +89,7 @@ co=function(o,d,Q){
 
 // CREATE RECTANGLE
 nr=function(x,y,w,l){
-  return new Object ({x:x || W+R()*150,
+  return ({x:x || W+R()*99,
                       y:y || R()*H, 
                       i:0,
                       w:w || T,
@@ -94,17 +103,18 @@ while(k<T) {
   e.push(nr());
   k++;
 }
-console.log(k);
-console.log(e.length);
+
+// c.globalAlpha = 0.5;
 
 // GAMELOOP
 gl=function() {
     requestAnimationFrame(gl);
-    dd(({x:0,y:0}),'#666',W,H);
+    c.clearRect(0,0,W,H);
+    // dd(({x:0,y:0}),'#888',W,H);
 
     if (v<1) {
       fs(r);
-      c.t("score: "+s, T, T);
+      c.t("score:"+s, T, T);
       return
     }
 
@@ -134,14 +144,14 @@ gl=function() {
     if (y+T>H) y=H-T;
 
     // collition between player and enemies group
-    var P = ({x:x,y:y,w:T});
-    if (co(P,e,0)) v--;
+    if (co( ({x:x,y:y,w:T}),e,0)) v--;
 
-    dd(P, g);
+    if (n++>9) {n=0; t++; if(t>1)t=0;}    
+    c.drawImage(img, t*8,0, 8,8, x,y, 8,8);
+//    dd(P, g);
 
 // ENEMIES
-    for (var i=0; i<e.length; i++) {
-      var m = e[i];
+    e.forEach(function(m,i) {
       m.y -= 3*Math.cos(m.i*D);
       m.x -= 3;
 
@@ -152,18 +162,17 @@ gl=function() {
         e[i]=nr();
 
       dd(m, r);
-    }
+    })
 
 // BULLETS
-    for (var i=0; i<b.length; i++) {
-      var m = b[i];
+    b.forEach(function(m,i) {
       m.x += 3;
 
       // if a bullet passed away, removeit
       if (m.x>W) b.splice(i,1);
       
       dd(m, '#FD6');
-    }
+    })
     
 };
 gl();
