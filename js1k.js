@@ -54,12 +54,15 @@ b = new Array();
 
 // DRAGON PLAYER
 img = new Image();
-// img.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAICAQAAABaf7ccAAAAKklEQVR4AWMgDP4DIZyNUwmExGMKmqL/COWMaEYzgtmYutHFYBiXhaQAAE5qF+vrh9KMAAAAAElFTkSuQmCC";
-img.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAGAQAAAADiByNKAAAAGklEQVQIHWOy/c8UxsBkeILpryVT3FWmB68ANHcGywxre7AAAAAASUVORK5CYII=";
+img.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAICAQAAABaf7ccAAAAKklEQVR4AWMgDP4DIZyNUwmExGMKmqL/COWMaEYzgtmYutHFYBiXhaQAAE5qF+vrh9KMAAAAAElFTkSuQmCC";
+// img.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAGAQAAAADiByNKAAAAGklEQVQIHWOy/c8UxsBkeILpryVT3FWmB68ANHcGywxre7AAAAAASUVORK5CYII=";
+
+// img.src="data:image/png;base64,"+btoa("PNGIHDRâ#JIDATc²ýÏÆÀdxé¯%SÜU¦¯4wËk{°IEND®B`");
+
 // img.src="data:image/gif;base64,R0lGODdhEAAGAIAAAAAAAHt6eiwAAAAAEAAGAAACFASCcclouloz58HoaNUcp6pIjBcUADs="
 // img.src="data:image/gif;base64,R0lGODdhEAAGAIAAAAAAAAAAACH5BAEAAAEALAAAAAAQAAYAAAIUBIJxyWi6WjPnweho1RynqkiMFxQAOw=="
 // img.src="data:image/gif;base64,R0lGODdhEAAGAIAAAAAAAP///ywAAAAAEAAGAAACFASCcclouloz58HoaNUcp6pIjBcUADs="
-n=t=0;
+n=t=1;
 
 // context.fillStyle function
 fs=function(l){c.fillStyle=l;}
@@ -104,7 +107,7 @@ while(k<T) {
   k++;
 }
 
-// c.globalAlpha = 0.5;
+c.globalAlpha = 0.5;
 
 // GAMELOOP
 gl=function() {
@@ -113,7 +116,7 @@ gl=function() {
     // dd(({x:0,y:0}),'#888',W,H);
 
     if (v<1) {
-      fs(r);
+      // fs(r);
       c.t("score:"+s, T, T);
       return
     }
@@ -125,19 +128,23 @@ gl=function() {
 
 // SCORE
     // fs(g);
-    dd(({x:5,y:5}), g, 5,5);
-    c.t(v, T, T);
+    // dd(({x:5,y:5}), g, 5,5);
+    // c.t(v, T, T);
     // fs(r);
-    dd(({x:5,y:15}), r, 5,5);
-    c.t(s, T, 20);
+    // dd(({x:5,y:15}), r, 5,5);
+    // c.t(s, T, 20);
+
+    c.t("score:"+s, T, T);
+    c.t("lives:"+v, T, T*2);
 
 // PLAYER
-    if (k!=0){
+    // if (k!=0){
       if (k==40) y += 3;
       if (k==38) y -= 3;
+
       // to shoot: create bullet and reset keypressed
       if (k==32) { b.push(nr(x,y,5)); k=0;}
-    }
+    // }
 
     // PLAYER BOUNCE WITH THE UPPER/LOWER LIMITS
     if (y<0) y=0;
@@ -146,8 +153,21 @@ gl=function() {
     // collition between player and enemies group
     if (co( ({x:x,y:y,w:T}),e,0)) v--;
 
-    if (n++>9) {n=0; t++; if(t>1)t=0;}    
-    c.drawImage(img, t*8,0, 8,8, x,y, 8,8);
+    // if(n++>9){ n=0; t++; if(t>1)t=0; }
+    // c.drawImage(img,t*8,0,8,8,x,y,8,8);
+    
+    // if(n++>9) n=0;
+    // c.drawImage(img,Math.round(n/10)*8,0,8,8,x,y,8,8);
+
+    c.save();
+    // if(n++>20) t=n=1;
+    // if(n>10){ c.scale(1,-1); t=-1; }
+
+    if(n++>9) n=1;
+    t=Math.round(t/10);
+    c.drawImage(img,x,t*y,8,8*t);
+    c.restore();
+
 //    dd(P, g);
 
 // ENEMIES
@@ -171,9 +191,10 @@ gl=function() {
       // if a bullet passed away, removeit
       if (m.x>W) b.splice(i,1);
       
-      dd(m, '#FD6');
+      // dd(m, '#FD6');
+      dd(m, '#863');
     })
-    
+
 };
 gl();
 
