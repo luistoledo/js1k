@@ -21,13 +21,13 @@ W=cc.width/9;
 H=cc.height/9;
 
 // KEYBOARD
-k=t=e=[];
+k=[];
 
 // BULLETS
-// t=[];
+t=[];
 
 // ENEMIES
-// e=[];
+e=[];
 
 mb=mx=my=0;
 
