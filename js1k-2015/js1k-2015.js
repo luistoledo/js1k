@@ -1,22 +1,21 @@
-// file:///Users/luis/projects/js/js1k/js1k-2015/shim.html
 g=null;
 
+// MATH SHRINKS
 M = Math;
 ab=M.abs;
-
 R = M.random;
 
 // DELTA
 N = Date.now;
-// pN = N();
 
 // SET SCALE
 c.scale(9,9);
 
-cc=c.canvas;
 // WIDTH & HEIGHT
-W=cc.width/9;
-H=cc.height/9;
+with(c.canvas){
+    W=width/9;
+    H=height/9;
+}
 
 // KEYBOARD
 k=[];
@@ -30,7 +29,7 @@ e=[];
 // MOUSE KEYS X Y AND BUTTON
 // Z KILLS COUNTER
 // J BG COLOR
-z=mb=mx=my=0;
+j=z=mb=mx=my=0;
 
 // Creates a new game object
 // X,Y: POSITION
@@ -48,7 +47,7 @@ no = function (x,y,a,c,e){
 
 // PLAYER
 p=no(W/2,H/2,g,'#0f0');
-p.h=50; //PLAYER HEALTH
+p.h=50; //PLAYERS HEALTH
 
 // UPDATE AND DRAW GAME OBJECT
 ud=function(o, i) {
@@ -59,16 +58,15 @@ ud=function(o, i) {
         // REMOVE ENEMIE IF GOT HITTED BY A BULLET
         t.forEach(function(q){
             if (co(q, o)){
-                // console.log('kill:'+i);
+                console.log('i:'+i+'\nlen:'+e.lenght);
                 e.splice(i,1);
                 z++;
-                j='pink';
+                j='#2a2';
             }
         });
             
         // DAMAGE PLAYER
         if (co(p,o)) {
-            // console.log('hit player:'+p.h);
             p.h--;
             j='red';
         }
@@ -108,11 +106,13 @@ co=function(o,q){
 // GAME LOOP
 gl=function() {
 // CLEAR BUFFER
-    c.clearRect(0,0,W,H);
+    // c.clearRect(0,0,W,H);
+    c.fillStyle=j;
+    c.fillRect(0,0,W,H);
+    j='#fff';
 
-
-// ADD NEW ENEMIE EVERY 100 SECS OR SO
-    if (N()%100 < 1) {
+// ADD SOME NEW ENEMIES EVERY ~37.0-7.9 SECS (AS MUCH AS THIS CODE LOOPS IN THAT PERIOD OF TIME)
+    if (N()%70 < 1) {
         e.push(
                 no(g,g,g,'red',1)
             );
@@ -123,7 +123,7 @@ gl=function() {
 
 // HUD
     c.fillStyle='#000';
-    c.fillText('kills:'+z+'\nhp:'+p.h,0,9);
+    c.fillText('kills:'+z+' hp:'+p.h,0,9);
 
 // SKIP IF PLAYER IS DEAD
     if (p.h < 1) return;
