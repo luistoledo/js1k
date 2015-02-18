@@ -1,12 +1,10 @@
 // file:///Users/luis/projects/js/js1k/js1k-2015/shim.html
 g=null;
 
-c.t = c.fillText;
+M = Math;
+ab=M.abs;
 
-MT = Math;
-ab=MT.abs;
-
-R = MT.random;
+R = M.random;
 
 // DELTA
 N = Date.now;
@@ -29,7 +27,10 @@ t=[];
 // ENEMIES
 e=[];
 
-mb=mx=my=0;
+// MOUSE KEYS X Y AND BUTTON
+// Z KILLS COUNTER
+// J BG COLOR
+z=mb=mx=my=0;
 
 // Creates a new game object
 // X,Y: POSITION
@@ -60,6 +61,8 @@ ud=function(o, i) {
             if (co(q, o)){
                 // console.log('kill:'+i);
                 e.splice(i,1);
+                z++;
+                j='pink';
             }
         });
             
@@ -67,6 +70,7 @@ ud=function(o, i) {
         if (co(p,o)) {
             // console.log('hit player:'+p.h);
             p.h--;
+            j='red';
         }
     }
     // DISSAPEAR BULLETS FROM OUT OF THE SCREEN
@@ -77,8 +81,8 @@ ud=function(o, i) {
     // UPDATE POSITION (BULLETS AND ENEMIES)
     // ONLY IF THERE IT HAS AN ANGLE DIRECCTION
     if (o.a) {
-        o.x-=MT.cos(o.a);
-        o.y-=MT.sin(o.a);
+        o.x-=M.cos(o.a);
+        o.y-=M.sin(o.a);
     }
 
     // DRAW
@@ -90,7 +94,7 @@ ud=function(o, i) {
 // o,q = game object object 1 & 2
 // RETURN ANGLE FROM 0 TO -3.6
 fm = function(o,q){
-    return MT.atan2(o.y-q.y, o.x-q.x);
+    return M.atan2(o.y-q.y, o.x-q.x);
 }
 
 // COLLITION BETWEEN TWO OBJECTS
@@ -106,29 +110,28 @@ gl=function() {
 // CLEAR BUFFER
     c.clearRect(0,0,W,H);
 
-// UPDATE DELTATIME
-    // D = N()-pN;
-    // pN = N();
 
 // ADD NEW ENEMIE EVERY 100 SECS OR SO
     if (N()%100 < 1) {
         e.push(
                 no(g,g,g,'red',1)
             );
-        // console.log (no());
     }
 
 // UPDATE DRAW ENEMIES
     e.forEach(ud);
 
+// HUD
+    c.fillStyle='#000';
+    c.fillText('kills:'+z+'\nhp:'+p.h,0,9);
+
 // SKIP IF PLAYER IS DEAD
     if (p.h < 1) return;
 
 // DRAW PLAYER
-    p.y+=0.5*(k[83]|0-k[87]|0);
-    p.x+=0.5*(k[68]|0-k[65]|0);
-    // p.y+=k[40]|0-k[38]|0;
-    // p.x+=k[39]|0-k[37]|0;
+    p.y+=.5*(k[83]|0-k[87]|0);
+    p.x+=.5*(k[68]|0-k[65]|0);
+
     ud(p);
 
 // SHOOT A BULLET IF MOUSE PRESSED AND RANDOM
