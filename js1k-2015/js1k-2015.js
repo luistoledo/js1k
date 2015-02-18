@@ -47,7 +47,7 @@ no = function (x,y,a,c,e){
 
 // PLAYER
 p=no(W/2,H/2,g,'#0f0');
-p.h=50; //PLAYERS HEALTH
+p.h=10; //PLAYERS HEALTH
 
 // UPDATE AND DRAW GAME OBJECT
 ud=function(o, i) {
@@ -58,10 +58,9 @@ ud=function(o, i) {
         // REMOVE ENEMIE IF GOT HITTED BY A BULLET
         t.forEach(function(q){
             if (co(q, o)){
-                console.log('i:'+i+'\nlen:'+e.lenght);
                 e.splice(i,1);
                 z++;
-                j='#2a2';
+                j='#aa2';
             }
         });
             
@@ -106,13 +105,13 @@ co=function(o,q){
 // GAME LOOP
 gl=function() {
 // CLEAR BUFFER
-    // c.clearRect(0,0,W,H);
     c.fillStyle=j;
     c.fillRect(0,0,W,H);
     j='#fff';
 
-// ADD SOME NEW ENEMIES EVERY ~37.0-7.9 SECS (AS MUCH AS THIS CODE LOOPS IN THAT PERIOD OF TIME)
-    if (N()%70 < 1) {
+// ADD SOME NEW ENEMIES EVERY ~37.0-7.9 SECS
+// ADD AS MUCH AS THIS CODE LOOPS IN THAT PERIOD OF TIME
+    if (N()%60 < 1) {
         e.push(
                 no(g,g,g,'red',1)
             );
@@ -123,7 +122,7 @@ gl=function() {
 
 // HUD
     c.fillStyle='#000';
-    c.fillText('kills:'+z+' hp:'+p.h,0,9);
+    c.fillText('kills:'+z+' health:'+p.h,0,9);
 
 // SKIP IF PLAYER IS DEAD
     if (p.h < 1) return;
@@ -157,7 +156,6 @@ gl();
 //KEYBOARD HOOKS 
 b.onkeydown = function(e) {
     k[e.keyCode]=1;
-    // console.log(e.keyCode);
 }
 b.onkeyup = function(e) {
     k[e.keyCode]=0;
