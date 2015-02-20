@@ -1,3 +1,10 @@
+ac = new AudioContext();
+v = ac.createOscillator();
+v.connect(ac.destination);
+v.start(0);
+
+b.style.cursor='crosshair';
+
 g=null;
 
 // MATH SHRINKS
@@ -29,7 +36,7 @@ e=[];
 // MOUSE KEYS X Y AND BUTTON
 // Z KILLS COUNTER
 // J BG COLOR
-j=z=mb=mx=my=0;
+f=j=z=mb=mx=my=0;
 
 // Creates a new game object
 // X,Y: POSITION
@@ -60,7 +67,8 @@ ud=function(o, i) {
             if (co(q, o)){
                 e.splice(i,1);
                 z++;
-                j='#aa2';
+                j='#fff';
+                f=300;
             }
         });
             
@@ -68,6 +76,7 @@ ud=function(o, i) {
         if (co(p,o)) {
             p.h--;
             j='red';
+            f=400;
         }
     }
     // DISSAPEAR BULLETS FROM OUT OF THE SCREEN
@@ -107,7 +116,10 @@ gl=function() {
 // CLEAR BUFFER
     c.fillStyle=j;
     c.fillRect(0,0,W,H);
-    j='#fff';
+    j='#fde';
+
+    v.frequency.setValueAtTime(f,ac.currentTime);
+    f=0;
 
 // ADD SOME NEW ENEMIES EVERY ~37.0-7.9 SECS
 // ADD AS MUCH AS THIS CODE LOOPS IN THAT PERIOD OF TIME
@@ -122,10 +134,10 @@ gl=function() {
 
 // HUD
     c.fillStyle='#000';
-    c.fillText('kills:'+z+' health:'+p.h,0,9);
+    c.fillText('k:'+z+' h:'+p.h,0,9);
 
 // SKIP IF PLAYER IS DEAD
-    if (p.h < 1) return;
+    if (p.h < 1) {v.stop(); return;}
 
 // DRAW PLAYER
     p.y+=.5*(k[83]|0-k[87]|0);
@@ -142,6 +154,7 @@ gl=function() {
                     '#993',
                     0)
               );
+        f=200;
     }
 
 // UPDATE DRAW BULLETS
