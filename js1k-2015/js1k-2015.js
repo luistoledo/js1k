@@ -1,7 +1,40 @@
-ac = new AudioContext();
-v = ac.createOscillator();
-v.connect(ac.destination);
-v.start(0);
+/**
+ * js1k 2015
+ * February 2015
+ * @author luisernesto.toledo@gmail.com (Luis Toledo)
+ * @digitalcth digitalcth.com
+ * 
+ * MINI SHOOT'ER
+ * A player that shoots dangerous enemy waves on top-down view.
+ * WASD to move, MOUSE to aim and shoot. 
+ * 
+ * Version 1 features:
+ * - 'smooth' player movement 
+ * - mouse aim and shooting 
+ * - simple AI that follows the player 
+ * - enemies appears in waves 
+ * - hud with score and health 
+ * - eyecandy: different background flashes when got hurt and score!
+ *
+ * Version 2 features:
+ * - eyecandy: different beep sound when shoot, got hurt and score!!
+ *  - nasty audio strategy: using an endless oscillator, update the next frequency tone, and lastly reset the tone. same strategy as the background eyecandy
+ * - eyecandy: mouse cursor as crosshair
+ * - remove hud words, leaving just letters k: and h:
+ * - better compression (from a minimized 1270 to a crushed 1024)
+ * 
+ * Version 1 compressed using: 
+ * - uglifyjs --compress --mangle
+ * - jscrush
+ * 
+ * Version 2 compressed using: 
+ * - closure-compiler Adcanced (+ manual fixing)
+ * - regPack --crushGainFactor 1 --crushLenghtFactor 0 --crushCopiesFactor 0
+ *
+ * Inspired by a js13k's winner: extreme-mini-massacre by @pixelstab http://js13kgames.com/entries/extreme-mini-massacre
+ *
+ * posted on: http://js1k.com/2015-hypetrain/demo/2154
+ */
 
 b.style.cursor='crosshair';
 
@@ -12,17 +45,12 @@ M = Math;
 ab=M.abs;
 R = M.random;
 
-// DELTA
-N = Date.now;
-
 // SET SCALE
 c.scale(9,9);
 
 // WIDTH & HEIGHT
-with(c.canvas){
-    W=width/9;
-    H=height/9;
-}
+W=c.canvas.width/9;
+H=c.canvas.height/9;
 
 // KEYBOARD
 k=[];
@@ -36,6 +64,7 @@ e=[];
 // MOUSE KEYS X Y AND BUTTON
 // Z KILLS COUNTER
 // J BG COLOR
+// F SOUND FREQUENCY
 f=j=z=mb=mx=my=0;
 
 // Creates a new game object
@@ -52,7 +81,7 @@ no = function (x,y,a,c,e){
          });
 }
 
-// PLAYER
+// INIT PLAYER
 p=no(W/2,H/2,g,'#0f0');
 p.h=10; //PLAYERS HEALTH
 
@@ -113,17 +142,40 @@ co=function(o,q){
 
 // GAME LOOP
 gl=function() {
-// CLEAR BUFFER
+// CLEAR BACKGROUND & RESET NEXT BG COLOR
     c.fillStyle=j;
     c.fillRect(0,0,W,H);
     j='#fde';
 
+// In order to get the hud showed before players death, draw something (bullets) before game over
+// UPDATE DRAW BULLETS
+    t.forEach(ud);
+
+    // HUD
+    c.fillText('k:'+z+' h:'+p.h,0,9);
+
+// GAME OVER (SKIP) IF PLAYER IS DEAD
+    if (p.h < 1) {v.stop(); return;}
+
+// 'PLAY' NOTE ON THE OSCILLATOR, AND RESET THE FREQUENCY (f) FOR THE NEXT LOOP
     v.frequency.setValueAtTime(f,ac.currentTime);
     f=0;
 
+// SHOOT A BULLET IF MOUSE PRESSED AND RANDOM
+    if (mb && R()>.8) { 
+        t.push( 
+                no( p.x,
+                    p.y,
+                    fm(p,no(mx,my)),
+                    'Tan',
+                    0)
+              );
+        f=200;
+    }
+
 // ADD SOME NEW ENEMIES EVERY ~37.0-7.9 SECS
 // ADD AS MUCH AS THIS CODE LOOPS IN THAT PERIOD OF TIME
-    if (N()%60 < 1) {
+    if (Date.now()%35 < 1) {
         e.push(
                 no(g,g,g,'red',1)
             );
@@ -132,41 +184,28 @@ gl=function() {
 // UPDATE DRAW ENEMIES
     e.forEach(ud);
 
-// HUD
-    c.fillStyle='#000';
-    c.fillText('k:'+z+' h:'+p.h,0,9);
-
-// SKIP IF PLAYER IS DEAD
-    if (p.h < 1) {v.stop(); return;}
-
-// DRAW PLAYER
+// UPDATE PLAYER
     p.y+=.5*(k[83]|0-k[87]|0);
     p.x+=.5*(k[68]|0-k[65]|0);
 
-    ud(p);
+// DRAW PLAYER
+    ud(p,0);
 
-// SHOOT A BULLET IF MOUSE PRESSED AND RANDOM
-    if (mb && R()>.8) { 
-        t.push( 
-                no( p.x,
-                    p.y,
-                    fm(p,no(mx,my)),
-                    '#993',
-                    0)
-              );
-        f=200;
-    }
-
-// UPDATE DRAW BULLETS
-    t.forEach(ud);
-
+// REPET GAME LOOP ON NEXT ANIMATION FRAME
+// LEAVE THIS REQUEST AT THE END OF THE FUNCTION TO NOT FORCE/INTERRUPT THE REDRAW
     requestAnimationFrame(gl);
 }
+
+// INITIALIZE A CONTINUOUS OSCILLATOR
+ac=new AudioContext();
+v=ac.createOscillator();
+v.connect(ac.destination);
+v.start(0);
 
 gl();
 
 
-//KEYBOARD HOOKS 
+//KEYBOARD AND MOUSE HOOKS 
 b.onkeydown = function(e) {
     k[e.keyCode]=1;
 }
