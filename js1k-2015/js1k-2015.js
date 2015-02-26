@@ -175,7 +175,7 @@ gl=function() {
 
 // ADD SOME NEW ENEMIES EVERY ~37.0-7.9 SECS
 // ADD AS MUCH AS THIS CODE LOOPS IN THAT PERIOD OF TIME
-    if (Date.now()%35 < 1) {
+    if (Date.now()%45 < 1) {
         e.push(
                 no(g,g,g,'red',1)
             );
