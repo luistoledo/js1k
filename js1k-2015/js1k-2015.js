@@ -36,13 +36,13 @@
  * posted on: http://js1k.com/2015-hypetrain/demo/2154
  */
 
-b.style.cursor='crosshair';
+// b.style.cursor='crosshair';
 
-g=null;
+u=g=null;
 
 // MATH SHRINKS
 M = Math;
-ab=M.abs;
+B = M.abs;
 R = M.random;
 
 // SET SCALE
@@ -62,7 +62,7 @@ t=[];
 e=[];
 
 // MOUSE KEYS X Y AND BUTTON
-// Z KILLS COUNTER
+// Z KILLS COUNTER SCORE
 // J BG COLOR
 // F SOUND FREQUENCY
 f=j=z=mb=mx=my=0;
@@ -72,7 +72,7 @@ f=j=z=mb=mx=my=0;
 // A: DIRECTION ANGLE
 // C: COLOR
 // E: 1 IF ITS AN ENEMIE
-no = function (x,y,a,c,e){
+O = function (x,y,a,c,e){
   return ({x:x || R()*W,
            y:y || R()*H,
            a:a || 0,
@@ -82,18 +82,18 @@ no = function (x,y,a,c,e){
 }
 
 // INIT PLAYER
-p=no(W/2,H/2,g,'#0f0');
+p=O(W/2,H/2,g,'#0f0');
 p.h=10; //PLAYERS HEALTH
 
 // UPDATE AND DRAW GAME OBJECT
-ud=function(o, i) {
+D=function(o, i) {
     // RECALCULATE ENEMIE DIRECTION (AI) EVERY RANDOM TIME
     if (o.e) {
         if (R() < .05)
-            o.a = fm(o,p);
+            o.a = A(o,p);
         // REMOVE ENEMIE IF GOT HITTED BY A BULLET
         t.forEach(function(q){
-            if (co(q, o)){
+            if (C(q, o)){
                 e.splice(i,1);
                 z++;
                 j='#fff';
@@ -102,7 +102,7 @@ ud=function(o, i) {
         });
             
         // DAMAGE PLAYER
-        if (co(p,o)) {
+        if (C(p,o)) {
             p.h--;
             j='red';
             f=400;
@@ -114,7 +114,7 @@ ud=function(o, i) {
 
 
     // UPDATE POSITION (BULLETS AND ENEMIES)
-    // ONLY IF THERE IT HAS AN ANGLE DIRECCTION
+    // ONLY OBJECTS WITH ANGLE DIRECCTION
     if (o.a) {
         o.x-=M.cos(o.a);
         o.y-=M.sin(o.a);
@@ -128,20 +128,20 @@ ud=function(o, i) {
 // CALCULATE ANGLE FROM POINT TO POINT
 // o,q = game object object 1 & 2
 // RETURN ANGLE FROM 0 TO -3.6
-fm = function(o,q){
+A=function(o,q){
     return M.atan2(o.y-q.y, o.x-q.x);
 }
 
 // COLLITION BETWEEN TWO OBJECTS
 // RETURNS TRUE IF THEY COLIDE
-co=function(o,q){
+C=function(o,q){
     // return (mbs(o.x-q.x) < 1  && mbs(o.y-q.y) < 1);
-    return (ab(o.x-q.x) + ab(o.y-q.y) < 2);
+    return (B(o.x-q.x) + B(o.y-q.y) < 2);
 }
 
 
 // GAME LOOP
-gl=function() {
+G=function() {
 // CLEAR BACKGROUND & RESET NEXT BG COLOR
     c.fillStyle=j;
     c.fillRect(0,0,W,H);
@@ -149,7 +149,7 @@ gl=function() {
 
 // In order to get the hud showed before players death, draw something (bullets) before game over
 // UPDATE DRAW BULLETS
-    t.forEach(ud);
+    t.forEach(D);
 
     // HUD
     c.fillText('k:'+z+' h:'+p.h,0,9);
@@ -159,14 +159,15 @@ gl=function() {
 
 // 'PLAY' NOTE ON THE OSCILLATOR, AND RESET THE FREQUENCY (f) FOR THE NEXT LOOP
     v.frequency.setValueAtTime(f,ac.currentTime);
+    // v.frequency.value=f; // WEIRD SUSTAINED SOUNDS XD
     f=0;
 
 // SHOOT A BULLET IF MOUSE PRESSED AND RANDOM
     if (mb && R()>.8) { 
         t.push( 
-                no( p.x,
+                O( p.x,
                     p.y,
-                    fm(p,no(mx,my)),
+                    A(p,O(mx,my)),
                     'Tan',
                     0)
               );
@@ -177,23 +178,40 @@ gl=function() {
 // ADD AS MUCH AS THIS CODE LOOPS IN THAT PERIOD OF TIME
     if (Date.now()%45 < 1) {
         e.push(
-                no(g,g,g,'red',1)
+                O(g,g,g,'red',1)
             );
     }
 
+// PLACE DAH BOOOOMB!!!
+    // if (Date.now()%99 < 1)
+    if (R() > .99)
+        u = O(g,g,g,'#000');
+
+// IF A BOMB 'EXISTS', DRAW AND IF PLAYER GOT IT, EXPLODE THEM ALL!
+    if (u) {
+        D(u);
+        if (C(p,u)) {
+            u = g;
+            z+=e.lenght;
+            e=[];
+            j='#fff';
+            f=999;
+        }
+    }
+
 // UPDATE DRAW ENEMIES
-    e.forEach(ud);
+    e.forEach(D);
 
 // UPDATE PLAYER
     p.y+=.5*(k[83]|0-k[87]|0);
     p.x+=.5*(k[68]|0-k[65]|0);
 
 // DRAW PLAYER
-    ud(p,0);
+    D(p,0);
 
 // REPET GAME LOOP ON NEXT ANIMATION FRAME
 // LEAVE THIS REQUEST AT THE END OF THE FUNCTION TO NOT FORCE/INTERRUPT THE REDRAW
-    requestAnimationFrame(gl);
+    requestAnimationFrame(G);
 }
 
 // INITIALIZE A CONTINUOUS OSCILLATOR
@@ -202,23 +220,26 @@ v=ac.createOscillator();
 v.connect(ac.destination);
 v.start(0);
 
-gl();
+G();
 
 
 //KEYBOARD AND MOUSE HOOKS 
-b.onkeydown = function(e) {
+onkeydown = function(e) {
     k[e.keyCode]=1;
 }
-b.onkeyup = function(e) {
+onkeyup = function(e) {
     k[e.keyCode]=0;
 }
-b.onmousemove = function(e) {
+onmousemove = function(e) {
     mx=e.layerX/9;
     my=e.layerY/9;
 }
-b.onmousedown = function() {
+onmousedown = function() {
    ++mb;
 }
-b.onmouseup = function() {
+onmouseup = function() {
    --mb;
 }
+// onkeydown = onkeyup = function(e) {
+//     k[e.keyCode] = (e.type=='keydown')? 1 : 0;
+// }
