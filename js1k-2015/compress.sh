@@ -1,27 +1,16 @@
-if [ "$1" == "" ]; then
-  echo "param 1 =  ug:uglify || cc:closure-compiler"
-  echo "param 2 =  jc:jcrush || rp:regPack"
+if [ "$1" == "1" ]; then
+  echo "param 1: uglify + jscrush"
+  echo "param 2: closure-compiler + regPack"
 fi
 
-if [ "$1" == "ug" ]; then
-  echo "uglify"
+if [ "$1" == "1" ]; then
   uglifyjs --compress --mangle  -- js1k-2015.js > js1k-2015.min.js
-fi
-
-if [ "$1" == "cc" ]; then
-  echo "closure-compiler"
-  java -jar compiler.jar js1k-2015.js --language_in=ECMASCRIPT5 --compilation_level=ADVANCED_OPTIMIZATIONS  --externs=extern1.js > js1k-2015.min.js
-fi
-
-if [ "$2" == "jc" ]; then
-  echo "jcrush"
   cat js1k-2015.min.js | jscrush 1> js1k-2015.crush.js
+  wc -c *.js
 fi
 
-if [ "$2" == "rp" ]; then
-  echo "regPack"
-  node ./regPack.js js1k-2015.min.js --crushGainFactor 2 --crushLenghtFactor 0 --crushCopiesFactor 0 > js1k-2015.crush.js
+if [ "$1" == "2" ]; then
+  ccjs js1k-2015.js > js1k-2015.min.js
+  node ./regPack.js js1k-2015.min.js --crushGainFactor 1 --crushLenghtFactor 0 --crushCopiesFactor 0 > js1k-2015.crush.js
+  wc -c *.js
 fi
-
-echo "Results:"
-wc -c js1k*.js

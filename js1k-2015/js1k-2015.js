@@ -62,22 +62,22 @@ t=[];
 e=[];
 
 // MOUSE KEYS X Y AND BUTTON
-// Z: KILLS COUNTER SCORE
-// J: BG COLOR
-// F: SOUND FREQUENCY
-f=j=z=mb=X=Y=0;
+// Z KILLS COUNTER SCORE
+// J BG COLOR
+// F SOUND FREQUENCY
+f=j=z=mb=mx=my=0;
 
 // Creates a new game object
 // X,Y: POSITION
 // A: DIRECTION ANGLE
-// L: COLOR
-// N: 1 IF ITS AN ENEMIE
-O = function (x,y,a,l,e){
+// C: COLOR
+// E: 1 IF ITS AN ENEMIE
+O = function (x,y,a,c,e){
   return ({x:x || R()*W,
            y:y || R()*H,
            a:a || 0,
-           L:l || 0,
-           E:e || 0
+           c:c || 0,
+           e:e || 0
          });
 }
 
@@ -87,43 +87,42 @@ p.h=10; //PLAYERS HEALTH
 
 // UPDATE AND DRAW GAME OBJECT
 D=function(o, i) {
-    with (o) {
     // RECALCULATE ENEMIE DIRECTION (AI) EVERY RANDOM TIME
-        if (E) {
-            if (R() < .05)
-                a = A(o,p);
-            // REMOVE ENEMIE IF GOT HITTED BY A BULLET
-            t.forEach(function(q){
-                if (C(q, o)){
-                    e.splice(i,1);
-                    z++;
-                    j='#fff';
-                    f=3;
-                }
-            });
-            // DAMAGE PLAYER
-            if (C(p,o)) {
-                p.h--;
-                j='red';
-                f=4;
+    if (o.e) {
+        if (R() < .05)
+            o.a = A(o,p);
+        // REMOVE ENEMIE IF GOT HITTED BY A BULLET
+        t.forEach(function(q){
+            if (C(q, o)){
+                e.splice(i,1);
+                z++;
+                j='#fff';
+                f=300;
             }
+        });
+            
+        // DAMAGE PLAYER
+        if (C(p,o)) {
+            p.h--;
+            j='red';
+            f=400;
         }
-        // DISSAPEAR BULLETS FROM OUT OF THE SCREEN
-        else if(W-x<1||H-y<1)
-            t.splice(i,1);
-
-
-        // UPDATE POSITION (BULLETS AND ENEMIES)
-        // ONLY OBJECTS WITH ANGLE DIRECCTION
-        if (a) {
-            x-=M.cos(a);
-            y-=M.sin(a);
-        }
-
-        // DRAW
-        c.fillStyle=o.L;
-        c.fillRect(x,y,1,1);
     }
+    // DISSAPEAR BULLETS FROM OUT OF THE SCREEN
+    else if(W-o.x<1||H-o.y<1)
+        t.splice(i,1);
+
+
+    // UPDATE POSITION (BULLETS AND ENEMIES)
+    // ONLY OBJECTS WITH ANGLE DIRECCTION
+    if (o.a) {
+        o.x-=M.cos(o.a);
+        o.y-=M.sin(o.a);
+    }
+
+    // DRAW
+    c.fillStyle=o.c;
+    c.fillRect(o.x,o.y,1,1);
 };
 
 // CALCULATE ANGLE FROM POINT TO POINT
@@ -136,7 +135,7 @@ A=function(o,q){
 // COLLITION BETWEEN TWO OBJECTS
 // RETURNS TRUE IF THEY COLIDE
 C=function(o,q){
-    // return (abs(o.x-q.x) < 1  && abs(o.y-q.y) < 1);
+    // return (mbs(o.x-q.x) < 1  && mbs(o.y-q.y) < 1);
     return (B(o.x-q.x) + B(o.y-q.y) < 2);
 }
 
@@ -156,15 +155,11 @@ G=function() {
     c.fillText('k:'+z+' h:'+p.h,0,9);
 
 // GAME OVER (SKIP) IF PLAYER IS DEAD
-    if (p.h < 1) {
-        v.stop(1);
-        return;
-    }
+    if (p.h < 1) {v.stop(); return;}
 
 // 'PLAY' NOTE ON THE OSCILLATOR, AND RESET THE FREQUENCY (f) FOR THE NEXT LOOP
-// EXTERN SYNTAXT TO IMPROVE MY WORKFLOW WITH CLOSURE COMPILER. IT SHOULD BE READ AS v.frequency.setValueAtTime()
-// v.frequency.value=f; // WEIRD SUSTAINED SOUNDS XD
-    v.frequency.setValueAtTime(f*100+(R()*10),S.currentTime);
+    v.frequency.setValueAtTime(f,ac.currentTime);
+    // v.frequency.value=f; // WEIRD SUSTAINED SOUNDS XD
     f=0;
 
 // SHOOT A BULLET IF MOUSE PRESSED AND RANDOM
@@ -172,11 +167,11 @@ G=function() {
         t.push( 
                 O( p.x,
                     p.y,
-                    A(p,O(X,Y)),
+                    A(p,O(mx,my)),
                     'Tan',
                     0)
               );
-        f=2;
+        f=200;
     }
 
 // ADD SOME NEW ENEMIES EVERY ~37.0-7.9 SECS
@@ -197,10 +192,10 @@ G=function() {
         D(u);
         if (C(p,u)) {
             u = g;
-            z+=e.length;
+            z+=e.lenght;
             e=[];
-            j='#000';
-            f=9;
+            j='#fff';
+            f=999;
         }
     }
 
@@ -212,17 +207,17 @@ G=function() {
     p.x+=.5*(k[68]|0-k[65]|0);
 
 // DRAW PLAYER
-    D(p);
+    D(p,0);
 
-// REPEAT GAME LOOP ON NEXT ANIMATION FRAME
-// LEAVE THIS REQUEST AT THE END TO NOT FORCE/INTERRUPT THE REDRAW (DIFICULTY IS HYPER SENCIBLE TO THAT)
+// REPET GAME LOOP ON NEXT ANIMATION FRAME
+// LEAVE THIS REQUEST AT THE END OF THE FUNCTION TO NOT FORCE/INTERRUPT THE REDRAW
     requestAnimationFrame(G);
 }
 
 // INITIALIZE A CONTINUOUS OSCILLATOR
-S=new AudioContext();
-v=S.createOscillator();
-v.connect(S.destination);
+ac=new AudioContext();
+v=ac.createOscillator();
+v.connect(ac.destination);
 v.start(0);
 
 G();
@@ -236,8 +231,8 @@ onkeyup = function(e) {
     k[e.keyCode]=0;
 }
 onmousemove = function(e) {
-    X=e.layerX/9;
-    Y=e.layerY/9;
+    mx=e.layerX/9;
+    my=e.layerY/9;
 }
 onmousedown = function() {
    ++mb;
