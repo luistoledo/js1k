@@ -22,6 +22,17 @@
  * - eyecandy: mouse cursor as crosshair
  * - remove hud words, leaving just letters k: and h:
  * - better compression (from a minimized 1270 to a crushed 1024)
+ *
+ * Version 3 features:
+ * - add bomb gameplay!
+ *  - A bomb appears on screen every random time; when you touch it, all enemies dissapear and you scores
+ * - add speed randomness to enemies
+ * - fix disturbing sustained beep sound on gameover
+ * - update game colors :)
+ * - remove crosshair :\
+ * - code optimization and better compression (from a minimized 1275 to a crushed 1019)
+ *
+ * Optimizations:
  * 
  * Version 1 compressed using: 
  * - uglifyjs --compress --mangle
@@ -30,6 +41,11 @@
  * Version 2 compressed using: 
  * - closure-compiler Adcanced (+ manual fixing)
  * - regPack --crushGainFactor 1 --crushLenghtFactor 0 --crushCopiesFactor 0
+ *
+ * Version 3 compressed using:
+ * - uglifyjs --compress --mangle
+ * - regPack --crushGainFactor 2 --crushLenghtFactor 0 --crushCopiesFactor 0
+ * -* discard closure-compiler due scope issues with the "with" statement
  *
  * Inspired by a js13k's winner: extreme-mini-massacre by @pixelstab http://js13kgames.com/entries/extreme-mini-massacre
  *
@@ -83,7 +99,7 @@ O = function (x,y,a,l,e){
 }
 
 // INIT PLAYER
-p=O(W/2,H/2,g,'#0f0');
+p=O(W/2,H/2,g,'#fc2');
 p.h=10; //PLAYERS HEALTH
 
 // UPDATE AND DRAW GAME OBJECT
@@ -98,14 +114,14 @@ D=function(o, i) {
                 if (C(q, o)){
                     e.splice(i,1);
                     z++;
-                    j='#fff';
+                    j='#ddd';
                     f=3;
                 }
             });
             // DAMAGE PLAYER
             if (C(p,o)) {
                 p.h--;
-                j='red';
+                j='#fc2';
                 f=4;
             }
         }
@@ -147,7 +163,7 @@ G=function() {
 // CLEAR BACKGROUND & RESET NEXT BG COLOR
     c.fillStyle=j;
     c.fillRect(0,0,W,H);
-    j='#fde';
+    j='#6aa';
 
 // In order to get the hud showed before players death, draw something (bullets) before game over
 // UPDATE DRAW BULLETS
@@ -184,24 +200,24 @@ G=function() {
 // ADD AS MUCH AS THIS CODE LOOPS IN THAT PERIOD OF TIME
     if (Date.now()%45 < 1) {
         e.push(
-                O(g,g,g,'red',1)
+                O(g,g,g,'#445',1)
             );
     }
 
 // PLACE DAH BOOOOMB!!!
     // if (Date.now()%99 < 1)
     if (R() > .99)
-        u = O(g,g,g,'#000');
+        u = O(g,g,g,'red');
 
-// IF A BOMB 'EXISTS', DRAW AND IF PLAYER GOT IT, EXPLODE THEM ALL!
+// IF A BOMB 'EXISTS', DRAW, AND IF PLAYER CATCH IT EXPLODE THEM ALL!
     if (u) {
         D(u);
         if (C(p,u)) {
             u = g;
             z+=e.length;
             e=[];
-            j='#000';
-            f=9;
+            j='red';
+            f=7;
         }
     }
 
@@ -231,10 +247,10 @@ G();
 
 //KEYBOARD AND MOUSE HOOKS 
 onkeydown = function(e) {
-    k[e.keyCode]=1;
+    k[e.which]=1;
 }
 onkeyup = function(e) {
-    k[e.keyCode]=0;
+    k[e.which]=0;
 }
 onmousemove = function(e) {
     X=e.layerX/9;
