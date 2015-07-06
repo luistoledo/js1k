@@ -114,7 +114,7 @@ D=function(o, i) {
                 if (C(q, o)){
                     e.splice(i,1);
                     z++;
-                    j='#ddd';
+                    j='#8bb';
                     f=3;
                 }
             });
@@ -213,11 +213,11 @@ G=function() {
     if (u) {
         D(u);
         if (C(p,u)) {
-            u = g;
             z+=e.length;
             e=[];
-            j='red';
+            j=u.L;
             f=7;
+            u = g;
         }
     }
 
