@@ -79,25 +79,25 @@ G=function() {
         K[i]="";
         t(1+R()*8,()=>K[i]+=""+String.fromCharCode(12450+parseInt(90*R())));
 
-        if (R()>0.5) {
+        if (R()>0.3) {
           E[i]=0;
           //K[i]="";
           // c.fillStyle = "#00f";
           c.strokeStyle="#00f";
-          f = 100 + R()*100;
+          f = 100 + R()*200;
         }
         if (R()>0.3) {
           D[i]=0;
           //K[i]="";
           c.fillStyle = "#f00";
           // c.strokeStyle="#f00";
-          f = R()*10;
+          f = R();
         }
       }
     }
     else {
       // f = M.min((M.cos(o*50)*R()*2), 0.2)-R(); //wind
-      f = M.min((M.cos(o*10)), R())*5*R();
+      f = M.min((M.cos(o*10)), R())*3*R();
       //f = R() * o / 2;
     }
 
@@ -106,7 +106,7 @@ G=function() {
     if (E[i]>0) {
       c.beginPath();
       c.moveTo(i*5, H/4); // ITEM-TEXT POSITION
-      c.lineTo(2+E[i]*8, H/2); // RECT POSITION
+      c.lineTo(M.cos(o*i) + E[i]*8, H/2); // RECT POSITION
       c.stroke();
       c.closePath();
     }
@@ -114,7 +114,7 @@ G=function() {
     if (D[i]>0) {
       c.beginPath();
       c.moveTo(i*5, H/4 + H/1.8); // ITEM-TEXT POSITION
-      c.lineTo(2+D[i]*8, H/2+18); // RECT POSITION
+      c.lineTo(M.sin(o*i) + D[i]*8, H/2+18); // RECT POSITION
       c.stroke();
       c.closePath();
     }
