@@ -42,14 +42,14 @@ for (i=0;i<W/4;i++) {
   if (R()>0.1) D[i]=0;
   K[i]=""//+R();
 }
-let t=(n,f)=>{while(n-->0)f();}
+var t=(n,f)=>{while(n-->0)f();}
 
 // GAME LOOP
 G=function() {
   o+=.001;
 
   // CLEAR BACKGROUND & RESET NEXT BG COLOR
-  j='#112112aa';
+  j='#112';
   c.fillStyle=j;
   c.fillRect(0,0,W,H);
 

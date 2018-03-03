@@ -1,25 +1,30 @@
 #!/usr/bin/env bash
 
-# to install uglify: npm install -g uglifyjs
+# to install uglify: npm install -g uglify-es
 # to install jcrush: npm install -g jscrush
+# to install jcrush: npm install -g regpack
+# to install jcrush: npm install -g babel-minify
 
 in="js1k-2016.js"
 min="js1k-2016.min.js"
 crush="js1k-2016.crush.js"
 
 if [ "$1" == "" ]; then
-  echo "param 1 =  ug:uglify || cc:closure-compiler"
+  echo "sh compress.sh (param1) (param2)"
+  echo "param 1 =  ug:uglify || bm:babel minify"
   echo "param 2 =  jc:jcrush || rp:regPack"
 fi
 
+# uglify looks broken on ES6 ; so use uglify-es
 if [ "$1" == "ug" ]; then
   echo "uglify"
   uglifyjs --compress --mangle  -- $in > $min
 fi
 
-if [ "$1" == "cc" ]; then
-  echo "closure-compiler"
-  java -jar compiler.jar $in --language_in=ECMASCRIPT5 --compilation_level=ADVANCED_OPTIMIZATIONS  --externs=extern1.js > $min
+# babel minify
+if [ "$1" == "bm" ]; then
+  echo "minify"
+  minify $in -o $min
 fi
 
 if [ "$2" == "jc" ]; then
@@ -29,7 +34,7 @@ fi
 
 if [ "$2" == "rp" ]; then
   echo "regPack"
-  node ./regPack.js $min --crushGainFactor 2 --crushLenghtFactor 0 --crushCopiesFactor 0 > $crush
+  regpack $min --crushGainFactor 1 --crushLenghtFactor 0 --crushCopiesFactor 0  --contextVariableName "c" --hash2DContext true --hashAudioContext true --hashWebGLContext true --varsNotReassigned "a b c d g" > $crush
 fi
 
 echo "Results:"
